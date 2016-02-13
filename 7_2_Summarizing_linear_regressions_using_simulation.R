@@ -56,8 +56,35 @@ exp(pred.interval)
 # Now obtaining the predicitive interval using simulation
 # The point estimate for log earnings is:
 # 8.4 + 0.017 * 68 - 0.079 * 68 * 1 = 9.95
+# with a sd of 0.88
+# or with exp -> 21,000 with sd 2.4
 
-earn.logmodel.3(68, 1)
+display(earn.logmodel.3)
+earn.logmodel.3$coef[2]
 
-pred <- exp(rnorm(1000, 9.95, 0.88))
+# 68% CI [21000/2.4, 21000 * 2.4]
+# 95% CI [21000/2.4^2, 21000 * 2.4^2]
+
+# The prediction
+pred <- exp(rnorm(n = 1000,
+                  mean = 9.95,
+                  sd = 0.88))
+
+# The outcome of the prediction ignoring uncertainty in the regression params
+mean(pred)
+median(pred)
+quantile(pred, c(0.25, 0.75))  # 50% interval
+quantile(pred, c(0.025, 0.075))  # 95% interval
+
+# A more complex estimation where simulation is useful
+# Estimating the difference between 68-inch-tall man and woman
+
+# point estimate = 6900 (just the difference of point estimates for each)
+
+
+
+
+
+
+
 
