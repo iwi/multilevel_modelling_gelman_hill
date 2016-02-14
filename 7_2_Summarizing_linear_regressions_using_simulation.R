@@ -124,4 +124,21 @@ median(pred.diff)
 quantile(pred.diff, c(0.25, 0.75))
 quantile(pred.diff, c(0.025, 0.975))
 
+# Simulation to represent uncertainty in regression coefficients
+# page 142
+
+# Using sim() to include the coefficients uncertainty
+
+n.sims <- 1000
+sim.1 <- sim(earn.logmodel.3, n.sims)
+
+# Check the structure
+str(sim.1)
+
+# Note that to extract the coefficients and sigma we need to use coef() and
+# sigma.hat()
+
+mean(coef(sim.1)[1])
+mean(sigma.hat(sim.1))
+
 
