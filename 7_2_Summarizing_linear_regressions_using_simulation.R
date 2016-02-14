@@ -130,7 +130,7 @@ quantile(pred.diff, c(0.025, 0.975))
 # Using sim() to include the coefficients uncertainty
 
 n.sims <- 1000
-sim.1 <- sim(earn.logmodel.3, n.sims)
+sim.1 <- sim(earn.logmodel.3, n.sims)  # see page 143 for a sim() explanation
 
 # Check the structure
 str(sim.1)
@@ -156,12 +156,5 @@ beta.height <- coef(sim.1)[, 2]  # height coefficient
 beta.height_men <- coef(sim.1)[, 4]  # height:men coefficient
 height.for.men.coef <- beta.height + beta.height_men
 
-# The 95% CI is:
+# The simulated 95% CI for the height among men coefficient is:
 quantile(height.for.men.coef, c(0.025, 0.975))
-
-
-
-
-
-
-
