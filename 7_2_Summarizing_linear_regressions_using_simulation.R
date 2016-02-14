@@ -136,9 +136,32 @@ sim.1 <- sim(earn.logmodel.3, n.sims)
 str(sim.1)
 
 # Note that to extract the coefficients and sigma we need to use coef() and
-# sigma.hat()
+# sigma.hat() -- the book's way doesn't work
+str(coef(sim.1))
+head(coef(sim.1)[,2])
 
-mean(coef(sim.1)[1])
-mean(sigma.hat(sim.1))
+# Verify that these simulations are equivalent to the regression computations
+disp <- display(earn.logmodel.3)
+disp$coef[3]
+disp$se[3]  # which should be similar to:
+
+mean(coef(sim.1)[,3])
+sd(coef(sim.1)[,3])
+
+# Let's look at the coefficient of height among men
+# there is no direct way from the regression output to compute its se
+# but can be easily done via simulation
+
+beta.height <- coef(sim.1)[, 2]  # height coefficient
+beta.height_men <- coef(sim.1)[, 4]  # height:men coefficient
+height.for.men.coef <- beta.height + beta.height_men
+
+# The 95% CI is:
+quantile(height.for.men.coef, c(0.025, 0.975))
+
+
+
+
+
 
 
