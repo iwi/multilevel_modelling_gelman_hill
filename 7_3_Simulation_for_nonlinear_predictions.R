@@ -133,15 +133,49 @@ X.tilde <- cbind(rep(1, n.tilde),
                  incumbency.90)
 
 # Then we simulate 1000 predictive simulations ...
-
 n.sims <- 1000
 sim.88 <- sim(fit.88, n.sims)
-y.tilde <- array(NA, c(n.sims, n.tilde))
+
+# and we calculate the prediction of the 435 districts for the 1000
+# simulations
+y.tilde <- array(data = NA,
+                 dim = c(n.sims, n.tilde))
 for (s in 1:n.sims){
-  pred <- X.tilde %*% sim.88$coef[s,]
+  pred <- X.tilde %*% coef(sim.88)[s,]
   ok <- !is.na(pred)
-  y.tilde[s,ok] <- rnorm (sum(ok), pred[ok], sim.88$sigma[s])
+  y.tilde[s, ok] <- rnorm(n = sum(ok),
+                          mean = pred[ok],
+                          sd = sigma.hat(sim.88)[s])
 }
 
+# Predictive simulation for a nonlinear function of new data
 
+# we count the districts in which Dems win (> 0.5)
+# These values **could not** have been measured from the estimates
+# and uncertainties for the individual districts.
+# NAs are not added to the totals
+y.tilde2 <- ifelse(is.na(y.tilde), 0, y.tilde)
+dems.tilde <- rowSums(y.tilde2 > 0.5)
+summary(dems.tilde)
+sd(dems.tilde)
 
+# simulation and regression show similar results
+summary(coef(sim.88))
+display(fit.88)
+
+# Alternative implementation:
+pred.88 <- function(X.pred, lm.fit){
+  n.pred <- dim(X.pred)[1]
+  sim.88 <- sim(lm.fit, 1)
+  ok <- !is.na(pred)
+  y.pred <- replicate(NA, n.pred)
+  y.pred[ok] <- rnorm(n = sum(ok),
+                      mean = (X.pred %*% t(coef(sim.88)))[ok],
+                      sd = sigma.hat(sim.88))
+  return(y.pred)
+}
+
+y.tilde <- replicate(1000, pred.88(X.tilde, fit.88))
+dems.tilde <- replicate(1000, pred.88(X.tilde, fit.88) > 0.5)
+dems.tilde <- rowSums(y.tilde > 0.5, na.rm = TRUE)
+summary(dems.tilde)
