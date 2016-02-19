@@ -43,5 +43,19 @@ curve(invlogit(
   add = TRUE)
 
 # Predictive simulation using the binomial distribution
+n.sims <- 1000
+X.tilde <- cbind(1, wells$dist)  # Using the modelled data
+X.tilde <- cbind(1, rnorm(n = 10, mean = 40, sd = 20))  # Using a new set
+n.tilde <- nrow(X.tilde)
+y.tilde <- array(NA, c(n.sims, n.tilde))
+for (s in 1:n.sims){
+  p.tilde <- invlogit(X.tilde %*% coef(sim.1)[s,])
+  y.tilde <- rbinom(n.tilde, 1, p.tilde)
+}
+
+# The simulated proportion of changes
+summary(y.tilde)[4]
+sum(y.tilde) / length(y.tilde)
+
 
 
