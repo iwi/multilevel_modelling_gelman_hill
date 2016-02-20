@@ -57,5 +57,34 @@ for (s in 1:n.sims){
 summary(y.tilde)[4]
 sum(y.tilde) / length(y.tilde)
 
+# Predictive simulation using the latent logistic distribution
+# build the logit function
+logit <- function (a) {log(a/(1-a))}
 
+n.sims <- 1000
+X.tilde <- cbind(1, wells$dist)  # Using the modelled data
+X.tilde <- cbind(1, rnorm(n = 10, mean = 40, sd = 20))  # Using a new set
+n.tilde <- nrow(X.tilde)
+
+y.tilde <- array(NA, c(n.sims, n.tilde))
+for (s in 1:n.sims){
+  # epsilon.tilde are independent errors that we add to the
+  # linear predictor
+  epsilon.tilde <- logit(runif(n = n.tilde,
+                               min = 0,
+                               max = 1))
+  z.tilde <- X.tilde %*% coef(sim.1)[s,] + epsilon.tilde
+  # and we convert to binary if z.tilde is positive
+  y.tilde[s,] <- ifelse(z.tilde > 0, 1, 0)
+}
+
+summary(y.tilde)[4]
+
+# Alternative using matrix algebra
+epsilon.tilde <- array(logit(runif(n = n.sims * n.tilde,
+                                   min = 0,
+                                   max = 1)),
+                        c(n.sims, n.tilde))
+z.tilde <- coef(sim.1) %*% t(X.tilde) + epsilon.tilde
+y.tilde <- ifelse(z.tilde > 0, 1, 0)
 
