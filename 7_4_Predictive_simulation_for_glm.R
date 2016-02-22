@@ -135,7 +135,7 @@ display(fit.1b)
 x.new <- c(1, 68, 1)  # constant term = 1, height = 68, male = 1
 
 n.sims <- 1000
-# Point estimate
+# Point estimate of the probability
 prob.earn.pos <- invlogit(coef(fit.1a) %*% x.new)
 
 # Simulation
@@ -147,3 +147,25 @@ earn.sim <- ifelse(earn.pos.sim == 0,
                    exp(rnorm(n = n.sims,
                              mean = coef(fit.1b) %*% x.new,
                              sd = sigma.hat(fit.1b))))
+
+# More generally we can use simulated values of the coefficient estimates:
+sim.1a <- sim(fit.1a, n.sims)
+sim.1b <- sim(fit.1b, n.sims)
+prob.earn.pos <- invlogit(coef(sim.1a) %*% x.new)
+earn.pos.sim <- rbinom(n = n.sims,
+                       size = 1,
+                       prob = prob.earn.pos)
+earn.sim <- ifelse(earn.pos.sim == 0,
+                   0,
+                   exp(rnorm(n = n.sims,
+                             mean = coef(sim.1b) %*% x.new,
+                             sd = sigma.hat(sim.1b))))
+
+
+# Let's calculate the mean predicted earnings by height and sex
+
+
+
+
+
+
