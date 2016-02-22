@@ -88,3 +88,62 @@ epsilon.tilde <- array(logit(runif(n = n.sims * n.tilde,
 z.tilde <- coef(sim.1) %*% t(X.tilde) + epsilon.tilde
 y.tilde <- ifelse(z.tilde > 0, 1, 0)
 
+# Compound models
+# page 150
+
+# Read earnings data from 6.7
+# Data are at http://www.stat.columbia.edu/~gelman/arm/examples/earnings
+
+heights <-
+  read.dta("~/llibres/llibres_tecnics/regression_multilevel_gelman_hill_2006/ARM_Data/earnings/heights.dta",
+           convert.factors = TRUE
+  )
+
+str(heights)
+
+# Prepare the data
+heights$male <- 2 - heights$sex
+ok <- !is.na(heights$earn +
+               heights$height +
+               heights$male)
+heights.clean <- as.data.frame(cbind(earn = heights$earn,
+                                     height = heights$height,
+                                     male = heights$male)[ok,])
+str(heights.clean)
+heights.clean$earn.pos <- ifelse(heights.clean$earn > 0, 1, 0)
+
+# Model earnings in two steps
+# First model if earnings are > 0
+fit.1a <- with(heights.clean,
+               glm(earn.pos ~
+                     height +
+                     male,
+                   family = binomial(link = "logit")))
+display(fit.1a)
+
+# Then model log(earnings)
+heights.clean$log.earn <- log(heights.clean$earn)
+fit.1b <- with(heights.clean,
+               lm(log.earn ~
+                    height +
+                    male,
+                  subset = earn > 0))
+display(fit.1b)
+
+# First we simulate a 68y/o man ignoring uncertainty in
+# the regression coefficients
+x.new <- c(1, 68, 1)  # constant term = 1, height = 68, male = 1
+
+n.sims <- 1000
+# Point estimate
+prob.earn.pos <- invlogit(coef(fit.1a) %*% x.new)
+
+# Simulation
+earn.pos.sim <- rbinom(n = n.sims,
+                       size = 1,
+                       prob = prob.earn.pos)
+earn.sim <- ifelse(earn.pos.sim == 0,
+                   0,
+                   exp(rnorm(n = n.sims,
+                             mean = coef(fit.1b) %*% x.new,
+                             sd = sigma.hat(fit.1b))))
