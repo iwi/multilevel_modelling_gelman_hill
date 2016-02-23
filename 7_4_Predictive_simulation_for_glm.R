@@ -163,9 +163,39 @@ earn.sim <- ifelse(earn.pos.sim == 0,
 
 
 # Let's calculate the mean predicted earnings by height and sex
+# We create a generic function of height, male and the two step
+# simulation
+Mean.earn <- function(height, male, sim.a, sim.b){
+  x.new <- c(1, height, male)
+  prob.earn.pos <- invlogit(coef(sim.a) %*% x.new)
+  earn.pos.sim <- rbinom(n.sims, 1, prob.earn.pos)
+  earn.sim <- ifelse(earn.pos.sim == 0,
+                     0,
+                     exp(rnorm(n = n.sims,
+                               mean = coef(sim.1b) %*% x.new,
+                               sd = sigma.hat(sim.1b))))
+  return(mean(earn.sim))
+}
 
+heights_to_evaluate <- seq(from = 60, to = 75, by = 1)
+mean.earn.female <- sapply(heights_to_evaluate,
+                           Mean.earn,
+                             male = 0,
+                             sim.1a,
+                             sim.1b)
 
+mean.earn.male <- sapply(heights_to_evaluate,
+                           Mean.earn,
+                             male = 1,
+                             sim.1a,
+                             sim.1b)
 
-
-
+library(ggplot2)
+data <- data.frame(heights = heights_to_evaluate,
+                   mef = mean.earn.female,
+                   mem = mean.earn.male)
+ggplot(data = data, aes(x = heights)) +
+  geom_line(aes(y = mef)) +
+  geom_line(aes(y = mem)) +
+  theme_light()
 
