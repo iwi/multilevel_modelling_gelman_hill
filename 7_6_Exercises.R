@@ -64,3 +64,47 @@ games$missed <- unlist(replicate(n = 1000, play2()[3]))
 hist(games$missed)
 
 summary(games)
+
+# 2
+weight_man <- function(){
+  return(exp(rnorm(n = 1, mean = 5.13, sd = 0.17)))
+}
+
+weight_woman <- function(){
+  return(exp(rnorm(n = 1, mean = 4.96, 0.2)))
+}
+
+is_man <- function(){
+  return(rbinom(1, 1, 0.48) == 1)
+}
+
+total_people_weight <- function(number_of_adults){
+  total <- 0
+  for (i in 1:number_of_adults){
+    if (is_man()) {
+      total <- total + weight_man()
+    } else {
+      total <- total + weight_woman()
+    }
+  }
+  return(total)
+}
+
+max_lift_weight <- 1750
+n.sims <- 1000
+
+lift_fails_prob <- function(n.sims){
+  lift_uses <- replicate(n.sims,
+                         total_people_weight(10) > max_lift_weight)
+
+  prob <- sum(lift_uses)/n.sims
+  return(prob)
+}
+
+means_lift_fails <- replicate(n.sims, lift_fails_prob(1000))
+hist(means_lift_fails)
+df <- data.frame(means = means_lift_fails)
+ggplot(df, aes(x = means)) +
+  geom_histogram()
+
+# 3
