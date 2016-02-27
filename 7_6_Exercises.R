@@ -125,10 +125,11 @@ hist(total_saved_dist)
 # 5
 library("arm")
 # Simulate linear data
+size <- 100
 # xs
-happiness <- rbinom(100, 10, 0.7)
-weight <- rnorm(100, mean = 65, sd = 10)
-noise <- rnorm(100, 0, 5)
+happiness <- rbinom(size, 10, 0.7)
+weight <- rnorm(size, mean = 65, sd = 10)
+noise <- rnorm(size, 0, 5)
 
 data <- data.frame(happiness = happiness,
                    weight = weight,
@@ -163,12 +164,52 @@ quantile(simulations, c(0.025, 0.975))
 
 # 6
 # create data
+str(data)
 
-data$success_bin <- with(data, lapply((happiness * 5 + weight *3 + noise),
-                                      FUN = logit))
+data$happ_and_weight <- with(data, happiness * 0.05 - weight * 0.1 + noise)
+
+# invlogit to convert to probability
+# {
+#   1/(1 + exp(-x))
+# }
+
+data$success_prob <- invlogit(data$happ_and_weight)
+
+with(data, plot(happ_and_weight, success_prob))
+
+rbinom_1_1 <- function(p){rbinom(1, 1, p)}
+
+data$success_bin <- sapply(data$success_prob, FUN = rbinom_1_1)
+
+with(data, plot(success_bin, success_prob))
+
+
+mean(data$happiness)
+sum(data$success_bin)
 
 fit_test_2 <- with(data,
                 glm(success_bin ~ happiness + weight,
                     family = binomial(link = "logit"))
 )
-display (fit_test_2)
+display(fit_test_2)
+
+coef(fit_test_2)
+plot(data$weight, data$success_bin)
+curve(invlogit(coef(fit_test_2)[1] + 7 * coef(fit_test_2)[2] + x * coef(fit_test_2)[3]),
+      from = 0.5,
+      lwd = 0.5,
+      add = TRUE)
+
+sim_test_2 <- sim(fit_test_2, 1000)
+
+data_point <- c(1, 6, 55)
+regress <- function(model, data_point){
+  success_prob <- invlogit(coef(model) %*% data_point)
+  return(success_prob)
+}
+
+success_probabilies <- regress(sim_test_2, data_point)
+
+hist(success_probabilies)
+
+
