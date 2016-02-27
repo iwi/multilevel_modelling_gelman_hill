@@ -103,8 +103,72 @@ lift_fails_prob <- function(n.sims){
 
 means_lift_fails <- replicate(n.sims, lift_fails_prob(1000))
 hist(means_lift_fails)
+summary(means_lift_fails)
 df <- data.frame(means = means_lift_fails)
 ggplot(df, aes(x = means)) +
   geom_histogram()
 
 # 3
+savings_per_unit <- function(){rnorm(1, 5, 4)}
+size_of_market <- function(){rnorm(1, 40000, 10000)}
+
+total_saved <- function(){
+  return(savings_per_unit() * size_of_market())
+  }
+
+total_saved_dist <- replicate(1000, total_saved())
+summary(total_saved_dist)
+hist(total_saved_dist)
+
+# 4
+
+# 5
+library("arm")
+# Simulate linear data
+# xs
+happiness <- rbinom(100, 10, 0.7)
+weight <- rnorm(100, mean = 65, sd = 10)
+noise <- rnorm(100, 0, 5)
+
+data <- data.frame(happiness = happiness,
+                   weight = weight,
+                   noise = noise)
+
+
+# y
+data$success <- happiness * 5 - weight * 3 + noise
+
+fit_test <- lm(success ~ happiness + weight,
+               data = data)
+display(fit_test)
+
+sim_test <- sim(fit_test, 1000)
+
+happ_f <- 12
+weight_f <- 75
+data_point <- array(c(1, happ_f, weight_f))
+
+regress <- function(models, data_point){
+  success <- coef(models) %*% data_point
+  return(success)
+}
+
+simulations <- regress(sim_test, data_point)
+regress(fit_test, data_point)
+
+hist(simulations)
+sd(simulations)
+mean(simulations)
+quantile(simulations, c(0.025, 0.975))
+
+# 6
+# create data
+
+data$success_bin <- with(data, lapply((happiness * 5 + weight *3 + noise),
+                                      FUN = logit))
+
+fit_test_2 <- with(data,
+                glm(success_bin ~ happiness + weight,
+                    family = binomial(link = "logit"))
+)
+display (fit_test_2)
