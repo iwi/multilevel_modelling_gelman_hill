@@ -2,11 +2,6 @@
 
 # Page 155
 
-# dependencies
-# library(arm)
-# library(foreign)
-# library(dplyr)
-
 # Create fake data for a linear regression:
 # initial x = 1, 2, 3, 4, 5
 
