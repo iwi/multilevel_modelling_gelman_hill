@@ -69,3 +69,74 @@ glm.1 <- with(roach_data,
                   family = poisson,
                   offset = log(exposure2)))
 display(glm.1)
+
+# Now we simulate new datasets that could be seen if the model were
+# true and the study were performed again
+
+n <- length(roach_data$y)
+X <- with(roach_data,
+          cbind(rep(1, n), roach1, treatment, senior))
+y.hat <- roach_data$exposure2 * exp(X %*% coef(glm.1))
+y.rep <- rpois(n, y.hat)
+
+# We compare the replicated data with the original
+# and see that if the model was true there would be no appartments
+# with zero roaches, whilst 36% are in that situation in the real
+# data
+print(mean(roach_data$y == 0))
+print(mean(y.rep == 0))
+
+# Comparing the data y to 1000 replicated datasets y.rep
+n.sims <- 1000
+sim.1 <- sim(glm.1, n.sims)
+y.rep <- array(NA, c(n.sims, n))
+for (s in 1:n.sims){
+  y.hat <- roach_data$exposure2 * exp(X %*% coef(sim.1)[s,])
+  y.rep[s,] <- rpois(n, y.hat)
+}
+
+Test <- function(y){mean(y == 0)}
+
+test.rep <- rep(NA, n.sims)
+for (s in 1:n.sims){
+  test.rep[s] <- Test(y.rep[s,])
+}
+
+summary(test.rep)
+# Which is way below 36%
+
+# Checking the overdispersed model
+glm.2 <- with(roach_data,
+              glm(y ~
+                    roach1 +
+                    treatment +
+                    senior,
+                  family = quasipoisson,
+                  offset = log(exposure2)))
+
+# Same coefficients but much larger standard errors
+display(glm.2)
+display(glm.1)
+
+
+# Comparing the data y to 1000 replicated datasets y.rep
+n.sims <- 1000
+sim.2 <- sim(glm.2, n.sims)
+y.rep <- array(NA, c(n.sims, n))
+for (s in 1:n.sims){
+  y.hat <- roach_data$exposure2 * exp(X %*% coef(sim.2)[s,])
+  overdisp <- summary(glm.2)$dispersion
+  a <- y.hat / (overdisp - 1)
+  y.rep[s,] <- rnegbin(n, y.hat, a)
+}
+
+Test <- function(y){mean(y == 0)}
+
+test.rep <- rep(NA, n.sims)
+for (s in 1:n.sims){
+  test.rep[s] <- Test(y.rep[s,])
+}
+
+summary(test.rep)
+quantile(test.rep, c(0.025, 0.975))
+
