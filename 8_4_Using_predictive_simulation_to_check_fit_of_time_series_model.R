@@ -1,8 +1,5 @@
-# Chapter 8.4
-
+# Chapter 8.4 Using predictive simulation to check the fit of a time-series model
 # Page 163
-
-# Using predictive simulation to check the fit of a time-series model
 
 # Data are at http://www.stat.columbia.edu/~gelman/arm/unemployment/unemployment.dat
 library ("arm")
