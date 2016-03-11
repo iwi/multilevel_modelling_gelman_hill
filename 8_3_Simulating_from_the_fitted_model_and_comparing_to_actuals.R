@@ -78,7 +78,7 @@ X <- with(roach_data,
           cbind(rep(1, n), roach1, treatment, senior))
 y.hat <- roach_data$exposure2 * exp(X %*% coef(glm.1))
 y.rep <- rpois(n, y.hat)
-
+roachdata$y
 # We compare the replicated data with the original
 # and see that if the model was true there would be no appartments
 # with zero roaches, whilst 36% are in that situation in the real
