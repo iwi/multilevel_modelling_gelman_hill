@@ -140,3 +140,6 @@ p <- p +  geom_abline(intercept = coef(lm.4.c)[2],
                         slope = coef(lm.4.c)[4],
                         colour = 'red')
 p
+
+mean(re4$treatment_effect)
+sd(re4$treatment_effect)
