@@ -7,11 +7,15 @@ data {
   int<lower=1,upper=85> county[N];
 }
 parameters {
-  real a;
+  real a[J];
   real b;
   real<lower=0> sigma_y;
 }
 model {
+  for (j in 1:J)
+    a[j] ~ normal(0, 1000);
+  b ~ normal(0, 1000);
+  sigma_y ~ uniform(0, 100);
   for (n in 1:N)
-    y[n] ~ normal(a + b * x[n], sigma_y);
+    y[n] ~ normal(a[county[n]] + b * x[n], sigma_y);
 }  
