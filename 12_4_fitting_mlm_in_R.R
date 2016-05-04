@@ -73,6 +73,15 @@ coef(M1)$county[26, 1] + c(-2, 2) * se.ranef(M1)$county[26]
 # 95% CI for the error in the intercept in county 26
 as.matrix(ranef(M1)$county)[26] + c(-2, 2) * se.ranef(M1)$county[26]
 
+
+## Complete pooling regression
+lm.pooled <- lm(y ~ x)
+display(lm.pooled)
+
+## No pooling regression
+lm.unpooled <- lm(y ~ x + factor(county) -1)
+display(lm.unpooled)
+
 # to plot Figure 12.4
 a.hat.M1 <- coef(M1)$county[, 1]                # 1st column is the intercept
 b.hat.M1 <- coef(M1)$county[, 2]                # 2nd element is the slope
@@ -88,8 +97,8 @@ for (j in display8){
         cex.axis=1.1, pch=20, mgp=c(2,.7,0), xaxt="n", yaxt="n", cex.main=1.1)
   axis (1, c(0,1), mgp=c(2,.7,0), cex.axis=1)
   axis (2, c(-1,1,3), mgp=c(2,.7,0), cex.axis=1)
-  curve (coef(lm.pooled)[1] + coef(lm.pooled)[2]*x, lty=2, col="gray10", add=TRUE)
-  curve (coef(lm.unpooled)[j+1] + coef(lm.unpooled)[1]*x, col="gray10", add=TRUE)
+  curve (coef(lm.pooled)[1] + coef(lm.pooled)[2]*x, lty=2, col="blue", add=TRUE)
+  curve (coef(lm.unpooled)[j+1] + coef(lm.unpooled)[1]*x, col="red", add=TRUE)
   curve (a.hat.M1[j] + b.hat.M1[j]*x, lwd=1, col="black", add=TRUE)
 }
 
