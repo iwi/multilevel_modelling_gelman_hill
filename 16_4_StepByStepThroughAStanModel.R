@@ -30,16 +30,16 @@ radon.1.sf <- stan(file = '~/R/x86_64-pc-linux-gnu-library/3.2/rstan/include/exa
 
 # Complete pooling with stan
 radon.data <- c("N", "J", "y", "x")
-radon.1.basic.sf <- stan(file = '~/R/x86_64-pc-linux-gnu-library/3.2/rstan/include/example-models-master/ARM/Ch.16/radon.1.basic_iu.stan',
+radon.1.basic.sf <- stan(file = '~/projectes/multilevel_modelling_gelman_hill/16_5_radon.1.complete_pooling.stan',
                    data = radon.data,
                    iter = 100,
                    chains = 4)
 
 # No pooling with stan
 radon.data <- c("N", "J", "y", "x", "county")
-radon.1.sf <- stan(file = '~/R/x86_64-pc-linux-gnu-library/3.2/rstan/include/example-models-master/ARM/Ch.16/radon.1.stan',
+radon.1.basic.sf <- stan(file = '~/projectes/multilevel_modelling_gelman_hill/16_5_radon.1.no_pooling.stan',
                    data = radon.data,
-                   iter = 30,
+                   iter = 100,
                    chains = 4)
 
 
@@ -50,7 +50,7 @@ plot(radon.1.sf, pars = c('a[1]', 'a[85]', 'mu_a', 'b', 'sigma_y', 'sigma_a'))#,
 print(radon.1.sf, digits = 1)
 
 print(radon.1.basic.sf)
-plot(radon.1.basic.sf, pars = c('a', 'b', 'sigma_y'))#, 'lp__'))
+plot(radon.1.basic.sf, pars = c('a', 'b', 'sigma_y', 'lp__'))
 print(radon.1.basic.sf, digits = 1)
 
 
