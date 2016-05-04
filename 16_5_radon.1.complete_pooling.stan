@@ -13,7 +13,7 @@ parameters {
 model {
   a ~ normal(0, 1000); // this is unnecessary, without this there is a default
   b ~ normal(0, 1000); //
-  sigma_y ~ unif(0, 100);
+  sigma_y ~ uniform(0, 100);
   for (n in 1:N)
     y[n] ~ normal(a + b * x[n], sigma_y);
 }  
