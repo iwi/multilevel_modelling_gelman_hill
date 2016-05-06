@@ -30,14 +30,14 @@ radon.1.sf <- stan(file = '~/R/x86_64-pc-linux-gnu-library/3.2/rstan/include/exa
 
 # Complete pooling with stan
 radon.data <- c("N", "J", "y", "x")
-radon.1.basic.sf <- stan(file = '~/projectes/multilevel_modelling_gelman_hill/16_5_radon.1.complete_pooling.stan',
+radon.1.pooled.sf <- stan(file = '~/projectes/multilevel_modelling_gelman_hill/16_5_radon.1.complete_pooling.stan',
                    data = radon.data,
                    iter = 100,
                    chains = 4)
 
 # No pooling with stan
 radon.data <- c("N", "J", "y", "x", "county")
-radon.1.basic.sf <- stan(file = '~/projectes/multilevel_modelling_gelman_hill/16_5_radon.1.no_pooling.stan',
+radon.1.no.pooling.sf <- stan(file = '~/projectes/multilevel_modelling_gelman_hill/16_5_radon.1.no_pooling.stan',
                    data = radon.data,
                    iter = 100,
                    chains = 4)
@@ -49,10 +49,13 @@ print(radon.1.sf)
 plot(radon.1.sf, pars = c('a[1]', 'a[85]', 'mu_a', 'b', 'sigma_y', 'sigma_a'))#, 'lp__'))
 print(radon.1.sf, digits = 1)
 
-print(radon.1.basic.sf)
-plot(radon.1.basic.sf, pars = c('a', 'b', 'sigma_y', 'lp__'))
-print(radon.1.basic.sf, digits = 1)
+print(radon.1.pooled.sf)
+plot(radon.1.pooled.sf, pars = c('a', 'b', 'sigma_y', 'lp__'))
+print(radon.1.pooled.sf, digits = 1)
 
+print(radon.1.no.pooling.sf)
+plot(radon.1.no.pooling.sf, pars = c('a[1]', 'a[85]', 'b', 'sigma_y', 'lp__'))
+print(radon.1.no.pooling.sf, digits = 1)
 
 # Plot Figure 16.2
 size = 30
@@ -79,16 +82,24 @@ hist(trace.ggdf$value, breaks = seq(1.2, 1.7, 0.025))
 
 
 ## Accessing the simulations
-sims <- extract(radon.1.sf)
-a <- sims$a
-b <- sims$b
-sigma.y <- sims$sigma_y
+sims_m <- extract(radon.1.sf)
+a <- sims_m$a
+b <- sims_m$b
+sigma.y <- sims_m$sigma_y
+
+sims_no_p <- extract(radon.1.no.pooling.sf)
+a_no_p <- sims_no_p$a
+b_no_p <- sims_no_p$b
+sigma.y_no_p <- sims_no_p$sigma_y
+
+
 
 # 90% CI for beta
 quantile(b, c(0.05, 0.95))
 
 # Prob. avg radon levels are higher in county 36 than in county 26
 mean(a[,36] > a[,26])
+mean(a_no_p[,36] > a_no_p[,26])
 
 ## Fitted values, residuals and other calculations
 a.multilevel <- rep(NA, J)
