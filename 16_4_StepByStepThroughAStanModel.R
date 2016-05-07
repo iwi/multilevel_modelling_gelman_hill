@@ -25,7 +25,7 @@ set.seed(1)
 radon.data <- c("N", "J", "y", "x", "county")
 radon.1.sf <- stan(file = '~/R/x86_64-pc-linux-gnu-library/3.2/rstan/include/example-models-master/ARM/Ch.16/radon.1.stan',
                    data = radon.data,
-                   iter = 30,
+                   iter = 100,
                    chains = 4)
 
 # Complete pooling with stan
