@@ -128,3 +128,19 @@ p2 <- ggplot(data.frame(radon.diff),
 print(p2)
 print(mean(radon.diff))
 print(sd(radon.diff))
+
+
+
+
+
+## PartiCall Stan from R
+set.seed(1)
+radon.data <- c("N", "J", "y", "x", "county", "u")
+radon.2.sf <- stan(file = '~/projectes/multilevel_modelling_gelman_hill/16_5_radon.2.mlm_group_level.stan',
+                   data = radon.data,
+                   iter = 100,
+                   chains = 4)
+print(radon.2.sf)
+plot(radon.2.sf, pars = c('a[1]', 'a[85]', 'b', 'g_0','g_1', 'sigma_y', 'sigma_a'))#, 'lp__'))
+
+print(radon.2.sf, digits = 1)
