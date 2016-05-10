@@ -144,3 +144,7 @@ print(radon.2.sf)
 plot(radon.2.sf, pars = c('a[1]', 'a[85]', 'b', 'g_0','g_1', 'sigma_y', 'sigma_a'))#, 'lp__'))
 
 print(radon.2.sf, digits = 1)
+
+sims_2.a <- extract(radon.2.sf,
+                  pars = 'a',
+                  inc_warmup = F)
