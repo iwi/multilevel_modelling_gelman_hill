@@ -19,8 +19,27 @@ radon.3.correlation <- stan(file = '~/projectes/multilevel_modelling_gelman_hill
                    chains = 4)
 
 print(radon.3.correlation, digits = 1)
-plot(radon.3.correlation, pars = c('a[1]', 'a[85]', 'mu_a', 'b', 'sigma_y', 'sigma_a'))#, 'lp__'))
+plot(radon.3.correlation, pars = c('B[1,1]',
+                                   'B[1,85]',
+                                   'B[2, 1]',
+                                   'B[2, 85]',
+                                   'a',
+                                   'b',
+                                   'sigma_y',
+                                   'sigma_a',
+                                   'sigma_b'))#, 'lp__'))
 
+
+set.seed(1)
+radon.data <- c("N", "J", "y", "x", "county")
+radon.3.correlation_original <- stan(
+  file = '~/R/x86_64-pc-linux-gnu-library/3.2/rstan/include/example-models-master/ARM/Ch.17/17.1_radon_correlation.stan',
+  data = radon.data,
+  iter = 100,
+  chains = 4)
+
+print(radon.3.correlation_original, digits = 1)
+plot(radon.3.correlation_original, pars = c('a[1]', 'a[85]', 'mu_a', 'b', 'sigma_y', 'sigma_a'))#, 'lp__'))
 
 
 
