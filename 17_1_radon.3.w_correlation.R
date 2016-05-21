@@ -23,13 +23,12 @@ plot(radon.3.correlation, pars = c('B[1,1]',
                                    'B[1,85]',
                                    'B[2, 1]',
                                    'B[2, 85]',
-                                   'a',
-                                   'b',
                                    'sigma_y',
                                    'sigma_a',
-                                   'sigma_b'))#, 'lp__'))
+                                   'sigma_b',
+                                   'rho'))#, 'lp__'))
 
-
+# The original example
 set.seed(1)
 radon.data <- c("N", "J", "y", "x", "county")
 radon.3.correlation_original <- stan(
@@ -39,7 +38,23 @@ radon.3.correlation_original <- stan(
   chains = 4)
 
 print(radon.3.correlation_original, digits = 1)
-plot(radon.3.correlation_original, pars = c('a[1]', 'a[85]', 'mu_a', 'b', 'sigma_y', 'sigma_a'))#, 'lp__'))
+gtplot(radon.3.correlation_original, pars = c('a[1]', 'a[85]', 'mu_a', 'b', 'sigma_y', 'sigma_a'))#, 'lp__'))
+
+
+# With the Scaled inverse Wishart model
+set.seed(1)
+radon.data <- c("N", "J", "y", "x", "county")
+radon.3.correlation_wishart <- stan(
+  file = '~/R/x86_64-pc-linux-gnu-library/3.2/rstan/include/example-models-master/ARM/Ch.17/17.1_radon_wishart.stan',
+  data = radon.data,
+  iter = 100,
+  chains = 4)
+
+print(radon.3.correlation_wishart, digits = 1)
+gtplot(radon.3.correlation_wishart, pars = c('a[1]', 'a[85]', 'mu_a', 'b', 'sigma_y', 'sigma_a'))#, 'lp__'))
+
+
+
 
 
 
@@ -134,3 +149,15 @@ print(radon.2.sf, digits = 1)
 sims_2.a <- extract(radon.2.sf,
                   pars = 'a',
                   inc_warmup = F)
+
+
+
+
+
+
+                      
+
+
+
+            
+
